@@ -9,11 +9,11 @@ const addBookshelfHanlder = (request, h) => {
 
   const finished = (pageCount === readPage) ? true: false;
 
-  const createdAt = new Date().toISOString();
-  const updatedAt = createdAt;
+  const insertedAt = new Date().toISOString();
+  const updatedAt = insertedAt;
 
   const newBook = {
-    id, name, year, author, summary, publisher, pageCount, readPage, finished, reading, createdAt, updatedAt,
+    id, name, year, author, summary, publisher, pageCount, readPage, finished, reading, insertedAt, updatedAt,
   };
 
 
@@ -82,7 +82,28 @@ const getAllBookshelfHanlder = (request, h) => {
 };
 
 const getDetailBookshelfByIdHanlder = (request, h) => {
+  const {bookId} = request.params;
 
+  const detail = bookshelf.filter((book) => book.id === bookId)[0];
+
+
+  if (detail !== undefined) {
+    return {
+      status: 'success',
+      data: {
+        book: detail,
+      },
+    };
+  }
+
+  const response = h.response({
+    status: 'fail',
+    message: 'Buku tidak ditemukan',
+  });
+
+  response.code(404);
+
+  return response;
 };
 
 const updateDetailBookshelfByIdHanlder = (request, h) => {
