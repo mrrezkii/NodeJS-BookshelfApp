@@ -65,7 +65,20 @@ const addBookshelfHanlder = (request, h) => {
 };
 
 const getAllBookshelfHanlder = (request, h) => {
+  const response = h.response({
+    status: 'success',
+    data: {
+      books: bookshelf.map((book) => ({
+        id: book.id,
+        name: book.name,
+        publisher: book.publisher,
+      })),
+    },
+  });
 
+  response.code(200);
+
+  return response;
 };
 
 const getDetailBookshelfByIdHanlder = (request, h) => {
