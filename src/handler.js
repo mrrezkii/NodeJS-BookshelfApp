@@ -104,8 +104,10 @@ const getAllBookshelfHanlder = (request, h) => {
     response.code(200);
 
     return response;
-  } else if (reading !== noData || reading !== {}) {
-    bookNameFiltering = bookNameFiltering.filter((book) => (reading === 1) ? book.reading : !book.reading);
+  }
+
+  if (reading !== noData) {
+    bookNameFiltering = bookNameFiltering.filter((book) => (reading == 1) ? book.reading : !book.reading);
     const response = h.response({
       status: 'success',
       data: {
@@ -119,8 +121,10 @@ const getAllBookshelfHanlder = (request, h) => {
     response.code(200);
 
     return response;
-  } else if (finished !== noData || finished !== {}) {
-    bookNameFiltering = bookNameFiltering.filter((book) => (finished === 1) ? book.finished : !book.finished);
+  }
+
+  if (finished !== noData) {
+    bookNameFiltering = bookNameFiltering.filter((book) => (finished == 1) ? book.finished : !book.finished);
     const response = h.response({
       status: 'success',
       data: {
