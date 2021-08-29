@@ -84,11 +84,10 @@ const addBookshelfHanlder = (request, h) => {
 };
 
 const getAllBookshelfHanlder = (request, h) => {
-  const {name} = request.query;
+  const {name, reading, finished} = request.query;
   const noData = undefined;
 
   let bookNameFiltering = bookshelf;
-
 
   if (name !== noData) {
     bookNameFiltering = bookNameFiltering.filter((book) => book.name.toLowerCase().includes(name.toLowerCase()));
@@ -105,7 +104,38 @@ const getAllBookshelfHanlder = (request, h) => {
     response.code(200);
 
     return response;
+  } else if (reading !== noData || reading !== {}) {
+    bookNameFiltering = bookNameFiltering.filter((book) => (reading === 1) ? book.reading : !book.reading);
+    const response = h.response({
+      status: 'success',
+      data: {
+        books: bookNameFiltering.map((book) => ({
+          id: book.id,
+          name: book.name,
+          publisher: book.publisher,
+        })),
+      },
+    });
+    response.code(200);
+
+    return response;
+  } else if (finished !== noData || finished !== {}) {
+    bookNameFiltering = bookNameFiltering.filter((book) => (finished === 1) ? book.finished : !book.finished);
+    const response = h.response({
+      status: 'success',
+      data: {
+        books: bookNameFiltering.map((book) => ({
+          id: book.id,
+          name: book.name,
+          publisher: book.publisher,
+        })),
+      },
+    });
+    response.code(200);
+
+    return response;
   }
+
   const response = h.response({
     status: 'success',
     data: {
