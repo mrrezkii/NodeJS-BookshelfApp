@@ -1,9 +1,17 @@
-/* eslint-disable max-len */
 const {nanoid} = require('nanoid');
+
 const bookshelf = require('./bookshelf');
 
 const addBookshelfHanlder = (request, h) => {
-  const {name, year, author, summary, publisher, pageCount, readPage, reading} = request.payload;
+  const {
+    name,
+    year,
+    author,
+    summary,
+    publisher,
+    pageCount,
+    readPage,
+    reading} = request.payload;
 
   const id = nanoid(16);
 
@@ -13,34 +21,44 @@ const addBookshelfHanlder = (request, h) => {
   const updatedAt = insertedAt;
 
   const newBook = {
-    id, name, year, author, summary, publisher, pageCount, readPage, finished, reading, insertedAt, updatedAt,
+    id,
+    name,
+    year,
+    author,
+    summary,
+    publisher,
+    pageCount,
+    readPage,
+    finished,
+    reading,
+    insertedAt,
+    updatedAt,
   };
 
-
-  const noData = undefined;
   const pageValid = (readPage > pageCount) ? false : true;
+
   bookshelf.push(newBook);
   const isSuccess = bookshelf.filter((book) => book.id === id).length > 0;
 
-  if (name === noData || name === {}) {
-    const response = h.response({
-      status: 'fail',
-      message: 'Gagal menambahkan buku. Mohon isi nama buku',
-    });
+  if (isSuccess) {
+    if (name === undefined || name === {}) {
+      const response = h.response({
+        status: 'fail',
+        message: 'Gagal menambahkan buku. Mohon isi nama buku',
+      });
 
-    response.code(400);
+      response.code(400);
+      return response;
+    } else if (!(pageValid)) {
+      const response = h.response({
+        status: 'fail',
+        message: 'Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount',
+      });
 
-    return response;
-  } else if (!(pageValid)) {
-    const response = h.response({
-      status: 'fail',
-      message: 'Gagal menambahkan buku. readPage tidak boleh lebih besar dari pageCount',
-    });
+      response.code(400);
+      return response;
+    }
 
-    response.code(400);
-
-    return response;
-  } else if (isSuccess) {
     const response = h.response({
       status: 'success',
       message: 'Buku berhasil ditambahkan',
@@ -59,12 +77,35 @@ const addBookshelfHanlder = (request, h) => {
     message: 'Buku gagal ditambahkan',
   });
 
+
   response.code(500);
 
   return response;
 };
 
 const getAllBookshelfHanlder = (request, h) => {
+  const {name} = request.query;
+  const noData = undefined;
+
+  let bookNameFiltering = bookshelf;
+
+
+  if (name !== noData) {
+    bookNameFiltering = bookNameFiltering.filter((book) => book.name.toLowerCase().includes(name.toLowerCase()));
+    const response = h.response({
+      status: 'success',
+      data: {
+        books: bookNameFiltering.map((book) => ({
+          id: book.id,
+          name: book.name,
+          publisher: book.publisher,
+        })),
+      },
+    });
+    response.code(200);
+
+    return response;
+  }
   const response = h.response({
     status: 'success',
     data: {
@@ -109,7 +150,15 @@ const getDetailBookshelfByIdHanlder = (request, h) => {
 const updateDetailBookshelfByIdHanlder = (request, h) => {
   const {bookId} = request.params;
 
-  const {name, year, author, summary, publisher, pageCount, readPage, reading} = request.payload;
+  const {
+    name,
+    year,
+    author,
+    summary,
+    publisher,
+    pageCount,
+    readPage,
+    reading} = request.payload;
   const updatedAt = new Date().toISOString();
 
   const index = bookshelf.findIndex((book) => book.id === bookId);
